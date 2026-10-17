@@ -1,0 +1,64 @@
+{
+ "about": "Here is the data you requested.",
+ "personal_information": {
+  "user_id": 10,
+  "first_name": "Саша",
+  "last_name": "",
+  "phone_number": "+0 000 000 0000",
+  "bio": ""
+ },
+ "chats": {
+  "about": "This page lists all chats from this export.",
+  "list": [
+   {
+    "name": "Ольга (заказчик)",
+    "type": "personal_chat",
+    "id": 2002,
+    "messages": [
+     {
+      "id": 100,
+      "type": "message",
+      "date": "2026-10-14T19:00:00",
+      "from": "Ольга (заказчик)",
+      "from_id": "user21",
+      "text": "Добрый вечер! Пришлите, пожалуйста, счёт на предоплату",
+      "text_entities": []
+     },
+     {
+      "id": 101,
+      "type": "message",
+      "date": "2026-10-14T19:05:00",
+      "from": "Саша",
+      "from_id": "user10",
+      "text": "Добрый! Пришлю завтра утром",
+      "text_entities": []
+     },
+     {
+      "id": 102,
+      "type": "message",
+      "date": "2026-10-14T19:06:00",
+      "from": "Ольга (заказчик)",
+      "from_id": "user21",
+      "text": "Спасибо 🙏",
+      "text_entities": []
+     }
+    ]
+   },
+   {
+    "type": "saved_messages",
+    "id": 10,
+    "messages": [
+     {
+      "id": 200,
+      "type": "message",
+      "date": "2026-10-15T08:00:00",
+      "from": "Саша",
+      "from_id": "user10",
+      "text": "Не забыть оплатить хостинг",
+      "text_entities": []
+     }
+    ]
+   }
+  ]
+ }
+}
