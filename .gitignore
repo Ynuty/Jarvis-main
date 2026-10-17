@@ -1,0 +1,65 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Окружения ---
+.venv/
+venv/
+env/
+
+# --- Секреты ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# --- Telegram: сессии и экспорты переписки ---
+*.session
+*.session-journal
+tdata/
+exports/
+ChatExport*/
+result.json
+
+# --- Модели (тяжёлые, скачиваются отдельно) ---
+models/
+*.gguf
+*.onnx
+*.safetensors
+*.bin
+*.pt
+
+# --- Данные пользователя (только в корне; tests/data/ с обезличенными примерами коммитим) ---
+/data/
+*.sqlite
+*.sqlite3
+*.db
+
+# --- Исследования: записи и расшифровки интервью ---
+interviews/
+*.m4a
+*.wav
+*.mp3
+*.ogg
+
+# --- Редакторы и ОС ---
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Локальные настройки Claude Code ---
+.claude/settings.local.json
