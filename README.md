@@ -8,4 +8,4 @@
 
 ## Команда
 
-Миша (Ynuty), Егор (dor1tozz), Рома (clipsmatrix).
+Ynuty, dor1tozz, clipsmatrix
