@@ -1,0 +1,184 @@
+/* Джарвис — стиль из документа «Архитектура и дизайн», раздел 5 */
+:root {
+  --bg: #0E1116;
+  --surface: #151A22;
+  --line: #2A313C;
+  --text: #E6EDF3;
+  --muted: #8B97A6;
+  --accent: #5EEAD4;
+  --success: #3FB950;
+  --danger: #F85149;
+  --on-accent: #0E1116;
+  --radius: 14px;
+  --font: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--text); font: 15px/1.45 var(--font); overflow: hidden; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.accent-text { color: var(--accent); font-size: 13px; }
+
+.app { position: relative; height: 100%; display: flex; flex-direction: column; padding: 0 32px 24px; }
+
+/* ---- шапка --------------------------------------------------------- */
+.top { position: relative; display: flex; align-items: center; justify-content: space-between; height: 64px; z-index: 30; }
+.brand { font-weight: 700; letter-spacing: .2px; }
+.tab {
+  position: absolute; left: 50%; top: 0; transform: translateX(-50%);
+  background: var(--surface); border: 1px solid var(--line); border-top: 0;
+  border-radius: 0 0 12px 12px; padding: 8px 22px 9px; font-size: 12.5px; color: var(--text);
+  min-width: 180px;
+}
+.tab:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+.tab .chev { color: var(--muted); margin-left: 4px; }
+.top-right { display: flex; align-items: center; gap: 14px; }
+.status { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12.5px; }
+.status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); display: inline-block; }
+.status.off .dot { background: var(--danger); }
+.icon-btn { background: none; border: 0; padding: 6px; border-radius: 8px; color: var(--muted); display: grid; }
+.icon-btn:hover { color: var(--text); background: var(--surface); }
+.icon-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+
+.stopped-banner {
+  align-self: center; margin-top: 4px; padding: 8px 14px; border-radius: 10px; font-size: 13px;
+  background: color-mix(in srgb, var(--danger) 14%, var(--surface)); border: 1px solid color-mix(in srgb, var(--danger) 40%, transparent);
+}
+.link-btn { background: none; border: 0; color: var(--accent); padding: 0 0 0 8px; text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---- орбита -------------------------------------------------------- */
+.stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; min-height: 0; position: relative; }
+.orbit { position: relative; width: min(300px, 46vh); aspect-ratio: 1; display: grid; place-items: center; }
+.ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.ring .dash-past { stroke: var(--accent); }
+.ring .dash-future { stroke: var(--line); }
+.ring .task-done { fill: var(--accent); }
+.ring .task-open { fill: var(--bg); stroke: var(--muted); stroke-width: 1.5; }
+.ring .now { fill: var(--accent); }
+
+.mic {
+  position: relative; z-index: 2; width: 37%; aspect-ratio: 1; border-radius: 50%; border: 0;
+  background: var(--accent); color: var(--on-accent); display: grid; place-items: center;
+  transition: transform .15s ease, box-shadow .2s ease;
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.mic:hover { transform: scale(1.03); }
+.mic:active { transform: scale(.97); }
+.mic svg { width: 46%; height: 46%; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+
+.ripples { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+.ripples span { position: absolute; width: 37%; aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--accent); opacity: 0; }
+[data-state="listening"] .ripples span { animation: ripple 1.8s ease-out infinite; }
+[data-state="listening"] .ripples span:nth-child(2) { animation-delay: .6s; }
+[data-state="listening"] .ripples span:nth-child(3) { animation-delay: 1.2s; }
+@keyframes ripple { from { transform: scale(1); opacity: .55; } to { transform: scale(2.3); opacity: 0; } }
+[data-state="thinking"] .mic { animation: pulse 1.1s ease-in-out infinite; }
+@keyframes pulse { 50% { transform: scale(.92); box-shadow: 0 0 0 18px color-mix(in srgb, var(--accent) 12%, transparent); } }
+[data-state="error"] .mic { background: color-mix(in srgb, var(--danger) 75%, var(--accent)); }
+
+/* ---- ответ --------------------------------------------------------- */
+.answer { text-align: center; max-width: 640px; min-height: 92px; }
+.state-label { color: var(--accent); font-size: 12.5px; min-height: 18px; }
+.said { font-size: 22px; line-height: 1.35; margin-top: 4px; }
+.said.heard { color: var(--muted); font-size: 15px; margin-bottom: 4px; }
+.steps { list-style: none; padding: 0; margin: 10px auto 0; display: inline-flex; flex-direction: column; gap: 4px; text-align: left; font-size: 13.5px; color: var(--muted); }
+.steps li::before { content: "✓"; color: var(--success); margin-right: 8px; }
+.steps li.fail::before { content: "✕"; color: var(--danger); }
+.actions { margin-top: 10px; display: flex; gap: 10px; justify-content: center; }
+
+.btn { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 16px; font-size: 13.5px; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 600; }
+.btn.danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, var(--line)); }
+.btn.ghost { background: none; color: var(--muted); }
+
+/* ---- подтверждение ------------------------------------------------- */
+.confirm {
+  position: absolute; bottom: 8px; width: min(440px, 92%); background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line)); border-radius: var(--radius);
+  padding: 18px 20px; box-shadow: 0 18px 50px rgba(0,0,0,.45); z-index: 10;
+}
+.confirm-title { font-size: 12px; text-transform: uppercase; letter-spacing: .6px; color: var(--accent); }
+.confirm-text { font-size: 16px; margin: 6px 0 4px; }
+.confirm-reason { color: var(--muted); font-size: 13px; }
+.confirm-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
+
+/* ---- шторка «День» ------------------------------------------------- */
+.sheet {
+  position: absolute; left: 0; right: 0; top: 0; bottom: 104px; z-index: 35;
+  background: var(--surface); border-bottom: 1px solid var(--accent);
+  border-radius: 0 0 var(--radius) var(--radius);
+  transform: translateY(-102%); transition: transform .32s cubic-bezier(.2,.8,.2,1);
+  display: flex; flex-direction: column;
+}
+.sheet.open { transform: none; }
+.sheet-inner { flex: 1; display: flex; flex-direction: column; padding: 40px 32px 0; min-height: 0; }
+.sheet-head { display: flex; align-items: baseline; justify-content: space-between; }
+.sheet-head h2 { font-size: 19px; margin: 0; }
+.cols { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 22px; min-height: 0; }
+.cols > div { min-height: 0; overflow-y: auto; padding-right: 6px; }
+.col-title { font-size: 10.5px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.plan, .log { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-direction: column; gap: 9px; font-size: 13.5px; }
+.plan li, .log li { display: grid; grid-template-columns: 44px auto 1fr; align-items: center; gap: 10px; }
+.log li { grid-template-columns: 44px 1fr; }
+.time { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.check {
+  width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--muted); background: none; padding: 0;
+  display: grid; place-items: center;
+}
+.check.done { background: var(--accent); border-color: var(--accent); }
+.plan li.done .title { color: var(--muted); }
+.plan .by { color: var(--accent); font-size: 11px; margin-left: 6px; }
+.log li.undone .text { text-decoration: line-through; color: var(--muted); }
+.empty { color: var(--muted); font-size: 13px; }
+.collapse { align-self: center; background: none; border: 0; color: var(--muted); font-size: 12.5px; padding: 12px 18px; }
+.collapse:hover { color: var(--text); }
+
+/* ---- поле ввода ---------------------------------------------------- */
+.composer { position: relative; z-index: 25; display: flex; align-items: center; gap: 14px; }
+.mini-mic { display: none; width: 40px; height: 40px; flex: none; border-radius: 50%; border: 0; background: var(--accent); }
+.sheet-open .mini-mic { display: block; }
+.input {
+  flex: 1; display: flex; align-items: center; gap: 12px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 12px; padding: 0 16px; height: 50px;
+}
+.input:focus-within { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
+.input input { flex: 1; min-width: 0; background: none; border: 0; outline: none; font-size: 14.5px; }
+.input input::placeholder { color: var(--muted); }
+.hint { color: var(--muted); font-size: 12px; white-space: nowrap; }
+
+/* ---- настройки ----------------------------------------------------- */
+.settings {
+  position: absolute; top: 58px; right: 24px; width: 320px; z-index: 40; background: var(--surface);
+  border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 14px;
+  box-shadow: 0 18px 50px rgba(0,0,0,.45);
+}
+.set-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.set-row.buttons { justify-content: flex-start; flex-wrap: wrap; }
+.set-label { font-size: 13.5px; }
+.swatches { display: flex; gap: 6px; }
+.swatch { width: 20px; height: 20px; border-radius: 50%; border: 2px solid transparent; padding: 0; }
+.swatch[aria-pressed="true"] { border-color: var(--text); }
+select { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 5px 8px; }
+.stt-api { display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid var(--line); border-radius: 10px; }
+.key-row { display: flex; gap: 8px; }
+.key-row input { flex: 1; min-width: 0; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; outline: none; }
+.key-row input:focus { border-color: var(--accent); }
+.key-row .btn { padding: 6px 12px; }
+.toggle input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+@media (max-width: 760px) {
+  .app { padding: 0 16px 16px; }
+  .cols { grid-template-columns: 1fr; gap: 24px; overflow-y: auto; }
+  .cols > div { overflow: visible; }
+  .hint, .status span { display: none; }
+  .said { font-size: 19px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0s !important; transition-duration: 0s !important; }
+}

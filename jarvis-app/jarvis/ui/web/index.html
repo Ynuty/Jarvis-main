@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="jarvis-token" content="{{TOKEN}}">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:; media-src 'self' blob:">
+<title>Джарвис</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app" id="app" data-state="idle">
+
+  <!-- Шапка -->
+  <header class="top">
+    <div class="brand">Джарвис</div>
+    <button class="tab" id="dayTab" aria-expanded="false" aria-controls="sheet">
+      <span id="tabLabel">День</span> <span class="chev" aria-hidden="true">˅</span>
+    </button>
+    <div class="top-right">
+      <span class="status" id="status"><i class="dot"></i><span id="statusText">Локально · без интернета</span></span>
+      <button class="icon-btn" id="settingsBtn" aria-label="Настройки" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Баннер аварийной остановки -->
+  <div class="stopped-banner" id="stoppedBanner" hidden>
+    Аварийная остановка: Джарвис ничего не выполняет.
+    <button class="link-btn" id="resumeBtn">Продолжить</button>
+  </div>
+
+  <!-- Орбита -->
+  <main class="stage">
+    <div class="orbit" id="orbit">
+      <svg class="ring" id="ring" viewBox="0 0 300 300" aria-hidden="true"></svg>
+      <div class="ripples" aria-hidden="true"><span></span><span></span><span></span></div>
+      <button class="mic" id="mic" aria-label="Говорить (удерживайте Пробел)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
+      </button>
+    </div>
+
+    <div class="answer" aria-live="polite">
+      <div class="state-label" id="stateLabel"></div>
+      <div class="said" id="said">Чем помочь?</div>
+      <ol class="steps" id="steps"></ol>
+      <div class="actions" id="actions"></div>
+    </div>
+
+    <!-- Карточка подтверждения -->
+    <div class="confirm" id="confirm" role="alertdialog" aria-labelledby="confirmText" hidden>
+      <div class="confirm-title">Нужно подтверждение</div>
+      <div class="confirm-text" id="confirmText"></div>
+      <div class="confirm-reason" id="confirmReason"></div>
+      <div class="confirm-buttons">
+        <button class="btn" id="confirmNo">Отмена</button>
+        <button class="btn primary" id="confirmYes">Подтвердить</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Шторка «День» -->
+  <section class="sheet" id="sheet" aria-label="День" aria-hidden="true">
+    <div class="sheet-inner">
+      <div class="sheet-head">
+        <h2 id="dateLabel">Сегодня</h2>
+        <span class="accent-text" id="doneCount"></span>
+      </div>
+      <div class="cols">
+        <div>
+          <div class="col-title">План на день</div>
+          <ul class="plan" id="plan"></ul>
+        </div>
+        <div>
+          <div class="col-title">Сделано Джарвисом</div>
+          <ul class="log" id="log"></ul>
+          <div class="muted small">Каждое действие попадает в журнал</div>
+        </div>
+      </div>
+      <button class="collapse" id="collapse">Свернуть <span aria-hidden="true">˄</span></button>
+    </div>
+  </section>
+
+  <!-- Поле ввода -->
+  <footer class="composer">
+    <button class="mini-mic" id="miniMic" aria-label="Говорить"></button>
+    <form class="input" id="form" autocomplete="off">
+      <input id="input" type="text" placeholder="Или напишите команду…" aria-label="Команда" maxlength="500">
+      <span class="hint" id="hint">Пробел — говорить · Ctrl+D — день</span>
+    </form>
+  </footer>
+
+  <!-- Настройки -->
+  <div class="settings" id="settings" hidden>
+    <div class="set-row">
+      <div class="set-label">Акцентный цвет</div>
+      <div class="swatches" id="swatches"></div>
+    </div>
+    <label class="set-row toggle"><span class="set-label">Озвучивать ответы</span><input type="checkbox" id="ttsToggle"></label>
+    <label class="set-row"><span class="set-label">Распознавание речи</span>
+      <select id="sttMode">
+        <option value="auto">Авто</option>
+        <option value="api">Через API</option>
+        <option value="local">Локально</option>
+      </select></label>
+    <div class="stt-api" id="sttApi">
+      <label class="set-row"><span class="set-label">Сервис</span><select id="sttProvider"></select></label>
+      <form class="key-row" id="keyForm" autocomplete="off">
+        <input id="sttKey" type="password" placeholder="Ключ API" aria-label="Ключ API" spellcheck="false">
+        <button class="btn" type="submit">Сохранить</button>
+      </form>
+      <div class="small muted" id="keyInfo"></div>
+    </div>
+    <label class="set-row"><span class="set-label">Профиль железа</span><select id="profileSel"></select></label>
+    <div class="set-row small muted" id="llmInfo"></div>
+    <div class="set-row buttons">
+      <button class="btn danger" id="stopBtn">Аварийная остановка</button>
+      <button class="btn" id="wipeBtn">Очистить данные</button>
+    </div>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
