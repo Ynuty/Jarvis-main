@@ -1,0 +1,10 @@
+"""Рецепт: Самокат. Вход — по номеру телефона в открытом окне (сессия сохраняется в профиле браузера)."""
+
+SHOP_ID = "samokat"
+HOME = "https://samokat.ru/"
+SEARCH = "https://samokat.ru/search?value={q}"
+LOGIN_HINT = "Войдите по номеру телефона и выберите адрес — один раз, дальше сессия сохранится."
+CARD = "a[href*='/product/'], [data-testid*='product']"
+ADD = "button[aria-label*='корзин' i], button[data-testid*='add' i]"
+ADD_TEXT = r"(в корзину|добавить|^\+$)"
+VERIFIED = ""

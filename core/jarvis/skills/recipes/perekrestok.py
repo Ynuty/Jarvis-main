@@ -1,0 +1,10 @@
+"""Рецепт: Перекрёсток (доставка)."""
+
+SHOP_ID = "perekrestok"
+HOME = "https://www.perekrestok.ru/"
+SEARCH = "https://www.perekrestok.ru/cat/search?search={q}"
+LOGIN_HINT = "Войдите по номеру телефона и укажите адрес доставки."
+CARD = "[class*='product-card'], .product-card-wrapper"
+ADD = "button[class*='add-to-cart' i], button[class*='cart-button' i]"
+ADD_TEXT = r"(в корзину|купить)"
+VERIFIED = ""

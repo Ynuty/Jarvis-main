@@ -1,0 +1,41 @@
+[project]
+name = "jarvis-core"
+version = "0.1.0"
+description = "J.A.R.V.I.S. — локальное ядро: речь, интенты, LLM, навыки, журнал"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "httpx>=0.27",
+  "pydantic>=2.7",
+  "argon2-cffi>=23.1",
+  "keyring>=25.0",
+  "cryptography>=43.0",
+  "numpy>=1.26",
+  "pymorphy3>=2.0",
+  "pymorphy3-dicts-ru>=2.4",
+  "rapidfuzz>=3.9",
+  "faster-whisper>=1.1",
+  "piper-tts>=1.2",
+  "uiautomation>=2.0.20; sys_platform == 'win32'",
+  "pypdf>=6.21.1",
+  "python-multipart>=0.0.32",
+]
+
+[project.optional-dependencies]
+# Whisper на видеокарте NVIDIA (cuBLAS + cuDNN 9 для CTranslate2)
+cuda = ["nvidia-cublas-cu12>=12.4", "nvidia-cudnn-cu12>=9.1,<10"]
+# Этап 2 заказов: автоматизация браузера
+browser = ["playwright>=1.47"]
+# Дообучение (LoRA) — тяжёлое, ставится отдельно
+finetune = ["peft>=0.12", "transformers>=4.44", "datasets>=2.20", "trl>=0.10", "torch>=2.3"]
+
+[dependency-groups]
+dev = ["pytest>=8.3", "pytest-asyncio>=0.24", "pyinstaller>=6.10"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["jarvis"]

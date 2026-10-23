@@ -1,0 +1,10 @@
+"""Рецепт: ВкусВилл."""
+
+SHOP_ID = "vkusvill"
+HOME = "https://vkusvill.ru/"
+SEARCH = "https://vkusvill.ru/search/?type=products&q={q}"
+LOGIN_HINT = "Войдите в личный кабинет и выберите адрес доставки."
+CARD = ".ProductCard, .ProductCards__item, [class*='ProductCard']"
+ADD = "button[class*='Cart' i], button[class*='Basket' i], .js-delivery__basket--add"
+ADD_TEXT = r"(в корзину|купить|добавить)"
+VERIFIED = ""

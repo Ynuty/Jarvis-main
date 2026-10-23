@@ -1,0 +1,16 @@
+# данные и модели — не в репозиторий
+.devhome/
+build/
+dist/
+lora-out/
+scripts/report-*.json
+*.jarvis
+*.jsonl.bak
+
+# зависимости и сборки
+core/.venv/
+**/__pycache__/
+*.egg-info/
+app/node_modules/
+app/dist/
+shell/node_modules/

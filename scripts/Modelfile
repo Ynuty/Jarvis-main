@@ -1,0 +1,19 @@
+# Модель Ollama из дообученной Qwen (см. README, «Дообучение»).
+# Путь — к GGUF, полученному из lora-out/merged через llama.cpp.
+#   ollama create jarvis-lora -f scripts/Modelfile
+# Затем в Джарвисе: Настройки → Модели → Нейросеть → jarvis-lora.
+
+FROM ../lora-out/jarvis-q4_K_M.gguf
+
+# Шаблон чата Qwen2.5 (ChatML)
+TEMPLATE """{{- if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}{{- range .Messages }}<|im_start|>{{ .Role }}
+{{ .Content }}<|im_end|>
+{{ end }}<|im_start|>assistant
+"""
+
+PARAMETER stop "<|im_start|>"
+PARAMETER stop "<|im_end|>"
+PARAMETER temperature 0.6
+PARAMETER num_ctx 4096

@@ -1,0 +1,10 @@
+"""Рецепт: Пятёрочка (доставка 5ka.ru)."""
+
+SHOP_ID = "pyaterochka"
+HOME = "https://5ka.ru/"
+SEARCH = "https://5ka.ru/search/?text={q}"
+LOGIN_HINT = "Войдите по номеру телефона и выберите адрес — сессия сохранится."
+CARD = "[data-qa*='product-card'], [class*='productCard'], a[href*='/product/']"
+ADD = "button[data-qa*='add' i], button[aria-label*='корзин' i]"
+ADD_TEXT = r"(в корзину|добавить|^\+$)"
+VERIFIED = ""

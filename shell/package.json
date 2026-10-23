@@ -1,0 +1,40 @@
+{
+  "name": "jarvis",
+  "productName": "J.A.R.V.I.S.",
+  "version": "0.1.0",
+  "description": "Локальный голосовой ассистент на русском",
+  "main": "main.js",
+  "private": true,
+  "author": "Jarvis",
+  "scripts": {
+    "start": "electron .",
+    "dev": "set JARVIS_DEV=1&& electron .",
+    "dist": "electron-builder --win nsis",
+    "dist:dir": "electron-builder --win dir"
+  },
+  "devDependencies": {
+    "electron": "33.2.1",
+    "electron-builder": "25.1.8"
+  },
+  "build": {
+    "appId": "local.jarvis.assistant",
+    "productName": "JARVIS",
+    "directories": { "output": "../dist" },
+    "files": ["main.js", "preload.js", "icon.png"],
+    "extraResources": [
+      { "from": "../app/dist", "to": "app" },
+      { "from": "../build/core", "to": "core" }
+    ],
+    "win": { "target": ["nsis"], "icon": "icon.png" },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "J.A.R.V.I.S.",
+      "deleteAppDataOnUninstall": false
+    },
+    "mac": { "target": ["dmg"], "category": "public.app-category.productivity" },
+    "linux": { "target": ["AppImage"], "category": "Utility" }
+  }
+}
