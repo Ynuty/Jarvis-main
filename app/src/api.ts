@@ -57,6 +57,8 @@ export async function api<T = any>(path: string, opts: { method?: string; body?:
   if (!res.ok) {
     let msg = res.statusText;
     try { msg = (await res.json()).detail ?? msg; } catch { /* тело не JSON */ }
+    // токен живёт в памяти ядра: после его перезапуска он недействителен — назад к входу
+    if (res.status === 401 && token && path !== "/api/login") link.emit({ type: "auth_lost" });
     throw new ApiError(res.status, typeof msg === "string" ? msg : JSON.stringify(msg));
   }
   if (opts.raw) return (await res.arrayBuffer()) as T;
@@ -67,6 +69,7 @@ export async function api<T = any>(path: string, opts: { method?: string; body?:
 /** POST с ответом text/event-stream: прогресс скачивания моделей. */
 export async function sse(path: string, body: unknown, onData: (d: any) => void): Promise<void> {
   const res = await fetch(BASE + path, { method: "POST", headers: headers(), body: JSON.stringify(body) });
+  if (res.status === 401 && token) link.emit({ type: "auth_lost" });
   if (!res.ok || !res.body) throw new ApiError(res.status, await res.text());
   const reader = res.body.getReader();
   const dec = new TextDecoder();

@@ -5,7 +5,7 @@
    → выбор голоса → как к вам обращаться.
    ============================================================ */
 
-import { api, sse } from "../api";
+import { api, ApiError, sse } from "../api";
 import * as AudioKit from "../audio";
 import { field, h, toast } from "../ui";
 
@@ -16,15 +16,19 @@ const VOICES: Record<string, string> = {
   "ru_RU-irina-medium": "Ирина — женский",
 };
 
-/** Проба голоса: ядро синтезирует фразу выбранным голосом (голос грузится пару секунд после смены). */
+/** Проба голоса: ядро синтезирует фразу выбранным голосом. После смены или скачивания
+ *  голос грузится несколько секунд (409 «загружается») — ждём до ~25 с, остальные ошибки сразу. */
 export async function playSample(): Promise<void> {
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 30; i++) {
     try {
       const wav = await api<ArrayBuffer>("/api/tts/sample", { raw: true });
       AudioKit.enqueueWav(wav);
       return;
     } catch (e: any) {
-      if (i === 5) toast("Голос ядра не готов: " + e.message + ". Будет использован голос Windows.", true);
+      if (!(e instanceof ApiError) || e.status !== 409 || i === 29) {
+        if (!(e instanceof ApiError && e.status === 401)) toast("Голос ядра не готов: " + e.message + ". Будет использован голос Windows.", true);
+        return;
+      }
       await new Promise((r) => setTimeout(r, 800));
     }
   }

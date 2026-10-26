@@ -14,7 +14,7 @@ import "@fontsource/jetbrains-mono/600.css";
 import "./styles/hud.css";
 import "./styles/app.css";
 
-import { api, link, setToken, shell, waitCore } from "./api";
+import { api, getToken, link, setToken, shell, waitCore } from "./api";
 import { app, applyAccent } from "./state";
 import { h, hhmmss, toast } from "./ui";
 import { cartView } from "./screens/cart";
@@ -127,7 +127,6 @@ async function enter(): Promise<void> {
   }
 
   if (!wired) { wire(); wired = true; }
-  link.on("auth_lost", logout);
   link.on("settings", (m) => { app.settings = m.settings; applyAccent(m.settings.accent); });
   link.connect();
   shell?.onTray((action) => {
@@ -145,6 +144,13 @@ function logout(): void {
   link.close();
   showGate();
 }
+
+// токен пропал (ядро перезапустилось) — в том числе посреди мастера первого запуска
+link.on("auth_lost", () => {
+  if (!getToken()) return;
+  toast("Ядро перезапустилось — войдите снова.", true);
+  logout();
+});
 
 window.addEventListener("unhandledrejection", (e) => {
   const msg = (e.reason && e.reason.message) || String(e.reason);

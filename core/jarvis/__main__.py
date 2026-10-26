@@ -13,7 +13,11 @@ def main() -> None:
     ap = argparse.ArgumentParser(prog="jarvis-core")
     ap.add_argument("--port", type=int, default=config.PORT)
     ap.add_argument("--log", default=os.environ.get("JARVIS_LOG", "info"))
+    ap.add_argument("--probe-cuda", metavar="MODEL", help="служебное: проверить Whisper на CUDA и выйти")
     a = ap.parse_args()
+    if a.probe_cuda:
+        from .voice.stt import probe_cuda_main
+        sys.exit(probe_cuda_main(a.probe_cuda))
     config.ensure_dirs()
     logging.basicConfig(level=a.log.upper(), format="%(asctime)s %(name)s %(levelname)s %(message)s",
                         handlers=[logging.StreamHandler(sys.stdout),

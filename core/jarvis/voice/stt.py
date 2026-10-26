@@ -1,7 +1,8 @@
 """
 ============================================================
- STT — faster-whisper, русский. Сначала пробуем CUDA (float16),
- при любой ошибке — CPU int8. Модель грузится один раз и
+ STT — faster-whisper, русский. Сначала пробуем CUDA (float16) —
+ проверкой в отдельном процессе: без cuDNN ctranslate2 роняет всё
+ ядро, — при любой ошибке CPU int8. Модель грузится один раз и
  «прогревается» тишиной, чтобы первая фраза не ждала инициализации.
  hotwords — имена приложений, магазинов и «Джарвис»: заметно
  поднимает точность имён собственных.
@@ -11,6 +12,7 @@ from __future__ import annotations
 
 import logging
 import os
+import subprocess
 import sys
 import threading
 import time
@@ -41,6 +43,48 @@ def _add_cuda_dlls() -> None:
                     pass
 
 
+def _load_model(name: str, device: str, ctype: str):
+    from faster_whisper import WhisperModel
+    # local_files_only: никаких фоновых загрузок — модель качает только мастер по кнопке
+    m = WhisperModel(name, device=device, compute_type=ctype, download_root=str(config.MODELS / "whisper"),
+                     local_files_only=True)
+    # прогрев: на CUDA именно здесь всплывают отсутствующие DLL
+    list(m.transcribe(np.zeros(16000, dtype="float32"), language="ru", beam_size=1)[0])
+    return m
+
+
+def probe_cuda_main(model: str) -> int:
+    """Тело дочернего процесса --probe-cuda: 0 — CUDA работает."""
+    _add_cuda_dlls()
+    try:
+        _load_model(model, "cuda", "float16")
+    except Exception as e:  # noqa: BLE001
+        print(e, file=sys.stderr)
+        return 1
+    return 0
+
+
+_cuda_ok: dict[str, bool] = {}
+
+
+def cuda_works(model: str) -> bool:
+    """Без cuDNN/cuBLAS ctranslate2 роняет весь процесс, а не бросает исключение,
+    поэтому CUDA сперва пробуем в отдельном процессе. Итог кешируется до перезапуска ядра."""
+    if model not in _cuda_ok:
+        cmd = [sys.executable] if getattr(sys, "frozen", False) else [sys.executable, "-m", "jarvis"]
+        try:
+            r = subprocess.run(cmd + ["--probe-cuda", model], capture_output=True, timeout=180,
+                               creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+            _cuda_ok[model] = r.returncode == 0
+            if r.returncode:
+                log.warning("whisper на CUDA не работает (код %s): %s", r.returncode,
+                            r.stderr.decode("utf-8", "replace")[-300:].strip())
+        except (OSError, subprocess.TimeoutExpired) as e:
+            log.warning("проверка CUDA не прошла: %s", e)
+            _cuda_ok[model] = False
+    return _cuda_ok[model]
+
+
 class STT:
     def __init__(self, model: str = "small", device: str = "auto") -> None:
         self.model_name = model
@@ -51,21 +95,18 @@ class STT:
         self.error = ""
 
     def load(self) -> bool:
-        from faster_whisper import WhisperModel
         _add_cuda_dlls()
-        root = str(config.MODELS / "whisper")
         tries = []
         if self.device_pref in ("auto", "cuda"):
-            tries.append(("cuda", "float16"))
-        if self.device_pref in ("auto", "cpu"):
+            if cuda_works(self.model_name):
+                tries.append(("cuda", "float16"))
+            else:
+                self.error = "cuda: нет CUDA/cuDNN — распознавание на процессоре"
+        if self.device_pref in ("auto", "cpu") or not tries:
             tries.append(("cpu", "int8"))
         for device, ctype in tries:
             try:
-                # local_files_only: никаких фоновых загрузок — модель качает только мастер по кнопке
-                m = WhisperModel(self.model_name, device=device, compute_type=ctype, download_root=root,
-                                 local_files_only=True)
-                # прогрев: на CUDA именно здесь всплывают отсутствующие DLL
-                list(m.transcribe(np.zeros(16000, dtype="float32"), language="ru", beam_size=1)[0])
+                m = _load_model(self.model_name, device, ctype)
                 self.model, self.device = m, f"{device}/{ctype}"
                 log.info("whisper %s на %s", self.model_name, self.device)
                 return True
